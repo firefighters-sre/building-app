@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.redhat.quarkus.service.AccessLogServiceTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.14 s -- in com.redhat.quarkus.service.AccessLogServiceTest

@@ -1,4 +1,0 @@
-com/redhat/quarkus/model/MoveLog.class
-com/redhat/quarkus/model/AccessLog.class
-com/redhat/quarkus/service/AccessLogService.class
-com/redhat/quarkus/resources/AccessLogResource.class
