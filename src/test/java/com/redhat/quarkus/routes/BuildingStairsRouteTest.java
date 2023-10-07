@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
+public class BuildingStairsRouteTest extends CamelQuarkusTestSupport {
 
   @Inject
   AgroalDataSource ds;
@@ -83,9 +83,9 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
   }
 
   @Test
-  void testConsumeFromElevator() throws Exception {
+  void testConsumeFromStairs() throws Exception {
 
-    String moveLog = "{\"personId\":1,\"destination\":\"1\",\"preferredRoute\":\"elevator\"}";
+    String moveLog = "{\"personId\":1,\"destination\":\"1\",\"preferredRoute\":\"stairs\"}";
     final String expectedQuery = "UPDATE FloorData SET people_count = LEAST(people_count + 1, max_people) WHERE floor_number = 1";
     final String unexpectedQuery = "UPDATE FloorData SET people_count = LEAST(people_count + 1, max_people) WHERE floor_number = ${header[floorNumber]}";
 
@@ -95,7 +95,7 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
     // Send a message to the route
     final Exchange exchange = this.createExchangeWithBody(moveLog);
 
-    this.producerTemplate.send("direct:{{kafka.topic.elevator.name}}", exchange);
+    this.producerTemplate.send("direct:{{kafka.topic.stairs.name}}", exchange);
 
     mockFloorData.assertIsSatisfied();
 
@@ -130,7 +130,7 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
       @Override
       public void configure() throws Exception {
 
-        from("direct:{{kafka.topic.elevator.name}}")
+        from("direct:{{kafka.topic.stairs.name}}")
             .to("mock:updateFloorData");
 
         from("direct:updateFloorDataTest")
