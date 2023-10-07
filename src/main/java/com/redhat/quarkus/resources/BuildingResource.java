@@ -37,9 +37,3 @@ public class BuildingResource {
       }
   }
 }
-
-
-
-
-
-
