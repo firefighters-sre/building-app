@@ -2,10 +2,12 @@ package com.redhat.quarkus.routes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.ResultSet;
 
 import com.redhat.quarkus.model.MoveLog;
 
@@ -15,6 +17,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -31,15 +34,15 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(H2DatabaseTestResource.class)
 public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
 
-  // @Inject
-  // AgroalDataSource ds;
+  @Inject
+  AgroalDataSource ds;
 
   @Inject
   ProducerTemplate producerTemplate;
 
   @Inject
   CamelContext context;
-  
+
   @Override
   protected CamelContext createCamelContext() throws Exception {
     return this.context;
@@ -47,12 +50,38 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
 
   @BeforeEach
   void setupDatabase() throws Exception {
-   //
+    try (Connection con = ds.getConnection()) {
+      try (Statement statement = con.createStatement()) {
+        con.setAutoCommit(true);
+        // Reset the FloorData table
+        statement.execute("DROP TABLE IF EXISTS FloorData");
+        statement.execute(
+            "CREATE TABLE FloorData (" +
+                "floor_number INT PRIMARY KEY, " +
+                "people_count INT NOT NULL DEFAULT 0, " +
+                "structure_quality INT CHECK (structure_quality BETWEEN 1 AND 5) NOT NULL, " +
+                "max_people INT NOT NULL, " +
+                "o2_level DECIMAL NOT NULL, " +
+                "co2_level DECIMAL NOT NULL" +
+                ")");
+        // Insert a known row into FloorData
+        statement.execute(
+          "INSERT INTO FloorData (" +
+            "floor_number, people_count, structure_quality, max_people, o2_level, co2_level) " +
+            "VALUES (1, 0, 5, 100, 20.9, 0.04"+
+            ")");
+      }
+    }
   }
 
   @AfterEach
-  void tearDownDatabase() {
-    // Code to tear down your database.
+  void tearDownDatabase() throws Exception {
+    try (Connection con = ds.getConnection()) {
+      try (Statement statement = con.createStatement()) {
+        // Reset the FloorData table
+        statement.execute("DROP TABLE IF EXISTS FloorData");
+      }
+    }
   }
 
   @Test
@@ -84,13 +113,17 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
     assertEquals(expectedQuery, mockBuildingDS.getExchanges().get(0).getMessage().getBody());
     assertNotEquals(unexpectedQuery, mockBuildingDS.getExchanges().get(0).getMessage().getBody());
 
-    // Arrange: Ensure the database is in a known state
-    // try (Connection con = this.ds.getConnection()) {
-    //   try (Statement stmt = con.createStatement()) {
-    //       stmt.execute("INSERT INTO FloorData (floor_number, people_count, structure_quality, max_people, o2_level, co2_level) VALUES (1, 0, 5, 100, 20.9, 0.04)");
-    //   }
-    // }
-
+    // Assert: Inspect the database to ensure the query had the desired effect
+    try (Connection con = ds.getConnection()) {
+      try (Statement stmt = con.createStatement()) {
+        stmt.execute(mockBuildingDS.getExchanges().get(0).getMessage().getBody().toString());
+        try (ResultSet rs = stmt.executeQuery("SELECT * FROM FloorData WHERE floor_number = 1")) {
+            assertTrue(rs.next(), "Should have found a row for floor 1");
+            assertEquals(1, rs.getInt("people_count"), "Should have incremented people_count for floor 1");
+            assertNotEquals(rs.getInt("floor_number"), 2, "Should have incremented people_count for floor 1");
+        }
+      }
+    }
   }
 
   @Override
