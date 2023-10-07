@@ -7,6 +7,7 @@ public class BuildingStairsRoute extends RouteBuilder {
   @Override
     public void configure() throws Exception {
         from("kafka:{{kafka.topic.stairs.name}}")
-                .to("direct:updateFloorData");
+          .log("Redirect \"${body}\" from Stairs")
+          .to("direct:updateFloorData");
     }
 }

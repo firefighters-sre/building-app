@@ -11,6 +11,7 @@ public class InFloorRoute extends RouteBuilder {
   @Override
     public void configure() throws Exception {
         from("direct:updateFloorData")
+          .log("Redirect \"${body}\" to Database")
           .unmarshal().json(JsonLibrary.Jackson, MoveLog.class)
                 .process(exchange -> {
                     MoveLog moveLog = exchange.getIn().getBody(MoveLog.class);
