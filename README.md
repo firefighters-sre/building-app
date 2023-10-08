@@ -8,8 +8,8 @@ The Building App is a Quarkus-based application focused on registering and manag
 - **Floor Management**: Registers and manages the count of people on each floor in a database.
 
 ## TODO List
-- [ ] **Process Kafka `stairs` and `elevator` Topic Events**: Capture and process events from the Kafka topics named `stairs` and `elevator`.
-- [ ] **Update Floor Count in Database**: Based on the messages from the topics, update the number of people on each floor in the database.
+- [X] **Process Kafka `stairs` and `elevator` Topic Events**: Capture and process events from the Kafka topics named `stairs` and `elevator`.
+- [X] **Update Floor Count in Database**: Based on the messages from the topics, update the number of people on each floor in the database.
 - [ ] **Retrieve information from the database**: 
 ## Running the application in dev mode
 
