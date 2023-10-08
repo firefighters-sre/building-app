@@ -131,10 +131,12 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
       public void configure() throws Exception {
 
         from("direct:{{kafka.topic.elevator.name}}")
-            .to("mock:updateFloorData");
+          .log("Received from Elevator ${body}") 
+          .to("mock:updateFloorData");
 
         from("direct:updateFloorDataTest")
             .unmarshal().json(JsonLibrary.Jackson, MoveLog.class)
+            .log("InFloorRoute: Redirecting MoveLog data \"${body}\" for destination floor ${body.destination} to Database.")
             .process(exchange -> {
               MoveLog moveLog = exchange.getIn().getBody(MoveLog.class);
               int destinationFloor = Integer.valueOf(moveLog.getDestination());

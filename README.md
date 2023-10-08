@@ -6,23 +6,6 @@ The Building App is a Quarkus-based application focused on registering and manag
 
 - **Stairs and Elevator Event Processing**: Captures and processes events from the Kafka topics `stairs` and `elevator`.
 - **Floor Management**: Registers and manages the count of people on each floor in a database.
-
-## TODO List
-- [X] **Process Kafka `stairs` and `elevator` Topic Events**: Capture and process events from the Kafka topics named `stairs` and `elevator`.
-- [X] **Update Floor Count in Database**: Based on the messages from the topics, update the number of people on each floor in the database.
-### 1.1
-- [ ] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
-  - Initialize `people_count` to 0.
-  - Set a default value for `max_people`.
-  - Set a default `structure_quality` rating (between 1 and 5).
-  - Set default values for `o2_level` and `co2_level`.
-- [ ] **Monitoring & Alerting**: Set up monitoring tools to keep track of the app's performance and health.
-- [ ] **Centralized Logging**: Integrate with a centralized logging system for better traceability.
-- [ ] **API Documentation**: Document all exposed APIs and endpoints for better clarity.
-- [ ] **Helm Chart Creation**: Design and implement a Helm chart for streamlined deployments of the `building-app` on Kubernetes clusters.
-- [ ] **Real-time Floor Count Display**: Implement a feature to provide a real-time display of people count on each floor.
-- [ ] **Integration with Concierge and Mobility Apps**: Ensure seamless data flow with the other microservices.
-
 ## Payload Example
 
 Here's an example of a typical payload that the Building App expects from the `stairs` and `elevator` topics:
@@ -34,6 +17,43 @@ Here's an example of a typical payload that the Building App expects from the `s
   "preferredRoute": "stairs"
 }
 ```
+
+## Monitoring Section for Building App 📊
+
+### Accessing the Metrics:
+
+To view the real-time metrics, navigate to the endpoint `/q/metrics`.
+
+### Key Metrics:
+
+- **`camel_exchanges_succeeded_total`**: Reflects the number of successfully completed exchanges.
+  
+- **`camel_exchanges_external_redeliveries_total`**: Indicates the number of external initiated redeliveries, such as from a JMS broker.
+
+- **`elevatorCounter_total`**: Provides a count of how frequently the elevator is utilized.
+
+- **`camel_exchanges_failed_total`**: Represents the number of exchanges that failed.
+
+- **`camel_exchanges_failures_handled_total`**: Shows the number of failures that the system managed to handle.
+
+- **`camel_routes_running_routes`**: Signifies the number of routes that are currently active.
+
+- **`stairsCounter_total`**: Offers a count of stairs usage instances.
+
+- **`updateFloorData_total`**: Shows how many times the floor data was updated.
+
+- **`updateFloorDataTimer_seconds`** (max, count, sum): Metrics that relate to the time taken for updating floor data.
+
+- **`camel_route_policy_seconds`** (count, sum, max): These metrics provide insights into the performance and efficiency of the routes.
+
+- **`camel_exchange_event_notifier_seconds`** (max, count, sum): Metrics detailing the time taken to send messages to various endpoints.
+
+- **`camel_exchanges_total`**: Displays the overall number of processed exchanges.
+
+- **`camel_exchanges_inflight`**: Reflects the number of inflight message exchanges.
+
+- **`camel_routes_added_routes`**: Indicates the number of routes added to the system.
+
 ## Database Structure - `FloorData`
 
 The `buildingdb` contains the `FloorData` table, designed to manage various data attributes related to each floor of the building. Here's a breakdown of its columns:

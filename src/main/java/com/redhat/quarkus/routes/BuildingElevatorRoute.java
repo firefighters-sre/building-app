@@ -7,7 +7,8 @@ public class BuildingElevatorRoute extends RouteBuilder {
   @Override
     public void configure() throws Exception {
         from("kafka:{{kafka.topic.elevator.name}}")
-          .log("Redirect \"${body}\" from Elevator")
+          .log("Received from Elevator ${body}") 
+          .to("micrometer:counter:elevatorCounter")
           .to("direct:updateFloorData");
     }
 }
