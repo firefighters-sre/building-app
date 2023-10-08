@@ -10,7 +10,43 @@ The Building App is a Quarkus-based application focused on registering and manag
 ## TODO List
 - [X] **Process Kafka `stairs` and `elevator` Topic Events**: Capture and process events from the Kafka topics named `stairs` and `elevator`.
 - [X] **Update Floor Count in Database**: Based on the messages from the topics, update the number of people on each floor in the database.
-- [ ] **Retrieve information from the database**: 
+### 1.1
+- [ ] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
+  - Initialize `people_count` to 0.
+  - Set a default value for `max_people`.
+  - Set a default `structure_quality` rating (between 1 and 5).
+  - Set default values for `o2_level` and `co2_level`.
+- [ ] **Monitoring & Alerting**: Set up monitoring tools to keep track of the app's performance and health.
+- [ ] **Centralized Logging**: Integrate with a centralized logging system for better traceability.
+- [ ] **API Documentation**: Document all exposed APIs and endpoints for better clarity.
+- [ ] **Helm Chart Creation**: Design and implement a Helm chart for streamlined deployments of the `building-app` on Kubernetes clusters.
+- [ ] **Real-time Floor Count Display**: Implement a feature to provide a real-time display of people count on each floor.
+- [ ] **Integration with Concierge and Mobility Apps**: Ensure seamless data flow with the other microservices.
+
+## Payload Example
+
+Here's an example of a typical payload that the Building App expects from the `stairs` and `elevator` topics:
+
+```json
+{
+  "personId": 12345,
+  "destination": "5",
+  "preferredRoute": "stairs"
+}
+```
+## Database Structure - `FloorData`
+
+The `buildingdb` contains the `FloorData` table, designed to manage various data attributes related to each floor of the building. Here's a breakdown of its columns:
+
+- `floor_number`: An integer indicating the floor's number and acts as the primary key.
+- `people_count`: An integer indicating the number of people currently on that floor, initialized to 0.
+- `structure_quality`: An integer rating between 1 and 5, reflecting the structural quality of the floor.
+- `max_people`: An integer indicating the maximum number of people allowed on that floor.
+- `o2_level`: A decimal indicating the current oxygen level on the floor.
+- `co2_level`: A decimal indicating the current carbon dioxide level on the floor.
+
+The database should be initialized with 5 floors, with each attribute appropriately set.
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
