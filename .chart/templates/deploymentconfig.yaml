@@ -1,0 +1,115 @@
+{{- if .Values.deploymentConfig }}
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ include "quarkus-app.fullname" . }}
+  labels:
+    {{- include "quarkus-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas.min }}
+  revisionHistoryLimit: 10
+  selector:
+    {{- include "quarkus-app.selectorLabels" . | nindent 4 }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/q/metrics'
+        prometheus.io/port: '8080'
+        rollme: {{ randAlphaNum 5 | quote }}
+        {{- if .Values.istio.enabled }}
+        sidecar.istio.io/inject: "true"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "27017"
+        proxy.istio.io/config: |
+          tracing:
+            sampling: 100.0
+        {{- end}}
+      creationTimestamp: null
+      labels:
+        {{- include "quarkus-app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - env:
+            - name: QUARKUS_PROFILE
+              value: prod
+            - name: QUARKUS_LOG_LEVEL
+              value: INFO
+            {{- if .Values.postgres.enabled }}
+            - name: POSTGRESQL_JDBC_URL
+              value: {{ .Values.postgres.url | quote }}
+            - name: POSTGRESQL_USER
+              value: {{ .Values.postgres.user }}
+            - name: POSTGRESQL_PASSWORD
+              value: {{ .Values.postgres.password }}
+            {{- end}}
+          image: ''
+          imagePullPolicy: Always
+          name: {{ include "quarkus-app.name" . }}
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '600m'
+              memory: 500Mi
+            requests:
+              cpu: '100m'
+              memory: 50Mi
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+              - ALL
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - {{ include "quarkus-app.name" . }}
+        from:
+          kind: ImageStreamTag
+          name: {{ include "quarkus-app.fullname" . }}:{{ .Values.image_version }}
+        lastTriggeredImage: ""
+      type: ImageChange
+{{- end }}

@@ -1,0 +1,72 @@
+# Default values for building-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+nameOverride: building-app
+fullnameOverride: building-app
+
+namespace: helm-test
+
+quarkus-app-chart:
+  nameOverride: building-app
+  fullnameOverride: building-app
+
+  # OpenShift objects
+  deployment: false
+  route: false
+
+  # if false use a kube deployment instead
+  deploymentConfig: false
+  replicas:
+    min: 1
+    max: 2
+  image_repository: quay.io
+  image_name: building-app
+  image_namespace: quarkus-dev
+  image_version: latest
+
+  buildconfig: 
+    enabled: true
+    runtime: java
+    runtimeVersion: openjdk-17-ubi8
+    git:
+      repo: 'https://github.com/firefighters-sre/building-app'
+
+  # use the image specified above as tag (else tag overridden in pipeline say)
+  istag:
+    enabled: true
+
+  hpa:
+    enabled: false
+    cpuTarget: 200m
+    memTarget: 300Mi
+
+  pdb:
+    enabled: false
+
+  # service mesh
+  istio:
+    enabled: false
+    mtls: true
+    domain: apps.hivec.sandbox209.opentlc.com
+
+prometheus:
+  namespace: kafka-logging
+  servicemonitor:
+    enabled: true
+  podmonitor:
+    enabled: false
+  slos:
+    enabled: true
+    severity: warning
+  slas:
+    enabled: false
+    severity: critical
+  fireincident:
+    slos: false
+    slas: false
+    
+postgres:
+  enabled: true
+  url: jdbc:postgresql://postgresql:5432/firefighters
+  user: userWPM
+  password: Oiu5HI4nBLDbYtHo

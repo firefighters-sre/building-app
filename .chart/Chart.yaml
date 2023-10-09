@@ -1,0 +1,17 @@
+apiVersion: v2
+name: building-app
+description: building-app
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+kubeVersion: '>=1.11.0-0'
+home: https://github.com/firefighters-sre/building-app
+keywords:
+  - sre
+  - building
+maintainers:
+  - name: gsampaio
+dependencies:
+- name: quarkus-app-chart
+  version: "1.0.4"
+  repository: "https://firefighters-sre.github.io/helm-charts/"
