@@ -9,7 +9,8 @@ namespace: helm-test
 quarkus-app-chart:
   nameOverride: building-app
   fullnameOverride: building-app
-
+  namespace: helm-test
+  
   # OpenShift objects
   deployment: false
   route: false
@@ -29,6 +30,13 @@ quarkus-app-chart:
     git:
       repo: 'https://github.com/firefighters-sre/building-app'
 
+  prometheus:
+    namespace: kafka-logging
+    servicemonitor:
+      enabled: true
+    podmonitor:
+      enabled: false
+  
   # use the image specified above as tag (else tag overridden in pipeline say)
   istag:
     enabled: true
