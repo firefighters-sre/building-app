@@ -27,21 +27,21 @@ The Building App is a Quarkus-based application focused on registering and manag
 - [X] **Route Documentation**: Document all exposed APIs and endpoints for better clarity.
 - [X] **Health Endpoint Integration**: Integrated `camel-quarkus-microprofile-health` to provide health check endpoints for application monitoring.
 ### 1.0.3
-- [ ] **Env vars**: 
-- [ ] **Helm Chart Creation**: Design and implement a Helm chart for streamlined deployments of the `building-app` on Kubernetes clusters.
-- [ ] **Implement Basic SLOs, SLAs, and Alerting**
-  - [ ] **Availability SLO**: Ensure 99.9% uptime over a 10-minute window and create Prometheus rules for alerting.
-  - [ ] **Latency SLO**: Ensure API response times are under 200ms and event processing times are within 500ms.
-  - [ ] **Error Rate SLO**: Ensure less than 0.1% of all API requests result in errors.
-  - [ ] **Availability SLA**: Implement a service credit system for downtime that falls below the agreed availability of 99.8% in a 10-minute window.
-  - [ ] **Latency SLA**: Implement a service credit for average response time exceeding 200ms for over an hour.
+- [X] **Database Connectivity via Environment Vars:**: Set up and validate environment variables for the database.
+- [X] **Helm Chart Creation**: Design and implement a Helm chart for streamlined deployments of the `building-app` on Kubernetes clusters.
+- [X] **Implement Basic SLOs, SLAs, and Alerting**
+  - [X] **Availability SLO**: Ensure 99.9% uptime over a 10-minute window and create Prometheus rules for alerting.
+  - [X] **Latency SLO**: Ensure API response times are under 200ms and event processing times are within 500ms.
+  - [X] **Error Rate SLO**: Ensure less than 0.1% of all API requests result in errors.
+  - [X] **Availability SLA**: Implement a service credit system for downtime that falls below the agreed availability of 99.8% in a 10-minute window.
+  - [X] **Latency SLA**: Implement a service credit for average response time exceeding 200ms for over an hour.
 ### 1.0.4
-- [ ] **SLO/SLA prevention Automation**: Implement automation routines to monitor and alert on SLO/SLA disruption. 
-  - [ ] **Automated Scaling**:
-    - [ ] **Horizontal Pod Autoscaling (HPA)**: Dynamically scale the number of running pods based on observed CPU utilization or other select metrics.
-  - [ ] **Self-Healing Systems**:
-    - [ ] **Liveness and Readiness Probes**: Implement probes to check the health of the application and restart pods that are not responsive.
-    - [ ] **PodDisruptionBudget (PDB)**: Ensure high availability during voluntary disruptions by defining the minimum available replicas.
+- [X] **SLO/SLA prevention Automation**: Implement automation routines to monitor and alert on SLO/SLA disruption. 
+  - [X] **Automated Scaling**:
+    - [X] **Horizontal Pod Autoscaling (HPA)**: Dynamically scale the number of running pods based on observed CPU utilization or other select metrics.
+  - [X] **Self-Healing Systems**:
+    - [X] **Liveness and Readiness Probes**: Implement probes to check the health of the application and restart pods that are not responsive.
+    - [X] **PodDisruptionBudget (PDB)**: Ensure high availability during voluntary disruptions by defining the minimum available replicas.
 ### 1.0.5
 - [ ] **Document the database**: 
 - [ ] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
