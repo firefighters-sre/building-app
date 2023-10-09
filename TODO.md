@@ -43,8 +43,8 @@ The Building App is a Quarkus-based application focused on registering and manag
     - [X] **Liveness and Readiness Probes**: Implement probes to check the health of the application and restart pods that are not responsive.
     - [X] **PodDisruptionBudget (PDB)**: Ensure high availability during voluntary disruptions by defining the minimum available replicas.
 ### 1.0.5
-- [ ] **Document the database**: 
-- [ ] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
+- [X] **Detail Database Schema**: Elaborate on the `FloorData` table structure, including data types, default values, and any other relevant information.
+- [X] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
   - Initialize `people_count` to 0.
   - Set a default value for `max_people`.
   - Set a default `structure_quality` rating (between 1 and 5).
@@ -55,7 +55,6 @@ The Building App is a Quarkus-based application focused on registering and manag
 - [ ] **Custom Metrics Scaling**: Implement scaling based on custom application-specific metrics.
 - [ ] **KEDA**:
 ### Backlog
-
 - [ ] **Real-time Floor Count Display**: Implement a feature to provide a real-time display of people count on each floor.
 - [ ] **Integration with Concierge and Mobility Apps**: Ensure seamless data flow with the other microservices.
 - [ ] **Centralized Logging**: Integrate with a centralized logging system for better traceability.

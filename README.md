@@ -98,16 +98,40 @@ To view the real-time metrics, navigate to the endpoint `/q/metrics`.
 
 ## Database Structure - `FloorData`
 
-The `buildingdb` contains the `FloorData` table, designed to manage various data attributes related to each floor of the building. Here's a breakdown of its columns:
+The `buildingdb` houses the `FloorData` table, which manages various data attributes related to each floor of the building. Below is a detailed breakdown of its columns:
 
-- `floor_number`: An integer indicating the floor's number and acts as the primary key.
-- `people_count`: An integer indicating the number of people currently on that floor, initialized to 0.
-- `structure_quality`: An integer rating between 1 and 5, reflecting the structural quality of the floor.
-- `max_people`: An integer indicating the maximum number of people allowed on that floor.
-- `o2_level`: A decimal indicating the current oxygen level on the floor.
-- `co2_level`: A decimal indicating the current carbon dioxide level on the floor.
+- **`floor_number`**:
+  - **Type**: Integer
+  - **Description**: Represents the floor's number.
+  - **Special Note**: Acts as the primary key. Initialized with values ranging from 1 to 5, representing five floors.
 
-The database should be initialized with 5 floors, with each attribute appropriately set.
+- **`people_count`**:
+  - **Type**: Integer
+  - **Description**: Denotes the number of people currently on that floor.
+  - **Default Value**: 0
+
+- **`structure_quality`**:
+  - **Type**: Integer
+  - **Description**: Rates the structural quality of the floor.
+  - **Range**: 1 to 5 (1 being the lowest quality and 5 being the highest quality)
+  - **Default Value**: 5 (indicating top-notch structural quality for all floors)
+
+- **`max_people`**:
+  - **Type**: Integer
+  - **Description**: Specifies the maximum number of people permitted on that floor.
+  - **Default Value**: 30 (indicating that up to 30 people can be present on a floor at any given time)
+
+- **`o2_level`**:
+  - **Type**: Decimal
+  - **Description**: Reflects the current oxygen level (%) on the floor.
+  - **Default Value**: 20.9% (representing the typical atmospheric oxygen level)
+
+- **`co2_level`**:
+  - **Type**: Decimal
+  - **Description**: Signifies the current carbon dioxide level (%) on the floor.
+  - **Default Value**: 0.04% (indicative of the standard atmospheric carbon dioxide level)
+
+Upon initializing the database, five floors are set up with these default attributes, ensuring consistent and reliable data representation for the building's floors.
 
 ## Running the application in dev mode
 
