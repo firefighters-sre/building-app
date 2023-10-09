@@ -16,7 +16,6 @@ import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
@@ -59,15 +58,19 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
                 "people_count INT NOT NULL DEFAULT 0, " +
                 "structure_quality INT CHECK (structure_quality BETWEEN 1 AND 5) NOT NULL, " +
                 "max_people INT NOT NULL, " +
-                "o2_level DECIMAL NOT NULL, " +
-                "co2_level DECIMAL NOT NULL" +
+                "o2_level DECIMAL(4,1) NOT NULL, " +
+                "co2_level DECIMAL(4,2) NOT NULL" +
                 ")");
-        // Insert a known row into FloorData
-        statement.execute(
-          "INSERT INTO FloorData (" +
-            "floor_number, people_count, structure_quality, max_people, o2_level, co2_level) " +
-            "VALUES (1, 0, 5, 100, 20.9, 0.04"+
-            ")");
+        // Initialize the 5 floors with the given parameters
+        for (int i = 1; i <= 5; i++) {
+          statement.execute(
+              "INSERT INTO FloorData (floor_number, people_count, structure_quality, max_people, o2_level, co2_level) "
+                  +
+                  "VALUES (" + i + ", 0, 5, 30, 20.9, 0.04)" // Assuming O2 level as 20.9% and CO2
+                                                             // level as 0.04% as common atmospheric
+                                                             // levels
+          );
+        }
       }
     }
   }
@@ -82,6 +85,41 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
     }
   }
 
+  @Test
+  void testFloorsInitialization() throws Exception {
+    // Expected values
+    final int expectedMaxPeople = 30;
+    final int expectedStructureQuality = 5;
+    final double expectedO2Level = 20.9;
+    final double expectedCO2Level = 0.04;
+
+    try (Connection con = ds.getConnection()) {
+      try (Statement stmt = con.createStatement()) {
+        for (int i = 1; i <= 5; i++) {
+          try (ResultSet rs = stmt.executeQuery("SELECT * FROM FloorData WHERE floor_number = " + i)) {
+            assertTrue(rs.next(), "Should have found a row for floor " + i);
+
+            // Assert max_people
+            assertEquals(expectedMaxPeople, rs.getInt("max_people"),
+                "Unexpected max_people for floor " + i);
+
+            // Assert structure_quality
+            assertEquals(expectedStructureQuality, rs.getInt("structure_quality"),
+                "Unexpected structure_quality for floor " + i);
+
+            // Assert o2_level
+            assertEquals(expectedO2Level, rs.getDouble("o2_level"), 0.01,
+                "Unexpected o2_level for floor " + i);
+
+            // Assert co2_level
+            assertEquals(expectedCO2Level, rs.getDouble("co2_level"), 0.01,
+                "Unexpected co2_level for floor " + i);
+          }
+        }
+      }
+    }
+  }
+  
   @Test
   void testConsumeFromElevator() throws Exception {
 
@@ -116,9 +154,9 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
       try (Statement stmt = con.createStatement()) {
         stmt.execute(mockBuildingDS.getExchanges().get(0).getMessage().getBody().toString());
         try (ResultSet rs = stmt.executeQuery("SELECT * FROM FloorData WHERE floor_number = 1")) {
-            assertTrue(rs.next(), "Should have found a row for floor 1");
-            assertEquals(1, rs.getInt("people_count"), "Should have incremented people_count for floor 1");
-            assertNotEquals(rs.getInt("floor_number"), 2, "Should have incremented people_count for floor 1");
+          assertTrue(rs.next(), "Should have found a row for floor 1");
+          assertEquals(1, rs.getInt("people_count"), "Should have incremented people_count for floor 1");
+          assertNotEquals(rs.getInt("floor_number"), 2, "Should have incremented people_count for floor 1");
         }
       }
     }
@@ -131,12 +169,13 @@ public class BuildingElevatorRouteTest extends CamelQuarkusTestSupport {
       public void configure() throws Exception {
 
         from("direct:{{kafka.topic.elevator.name}}")
-          .log("Received from Elevator ${body}") 
-          .to("mock:updateFloorData");
+            .log("Received from Elevator ${body}")
+            .to("mock:updateFloorData");
 
         from("direct:updateFloorDataTest")
             .unmarshal().json(JsonLibrary.Jackson, MoveLog.class)
-            .log("InFloorRoute: Redirecting MoveLog data \"${body}\" for destination floor ${body.destination} to Database.")
+            .log(
+                "InFloorRoute: Redirecting MoveLog data \"${body}\" for destination floor ${body.destination} to Database.")
             .process(exchange -> {
               MoveLog moveLog = exchange.getIn().getBody(MoveLog.class);
               int destinationFloor = Integer.valueOf(moveLog.getDestination());
