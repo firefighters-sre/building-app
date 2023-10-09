@@ -6,17 +6,59 @@ The Building App is a Quarkus-based application focused on registering and manag
 
 - **Stairs and Elevator Event Processing**: Captures and processes events from the Kafka topics `stairs` and `elevator`.
 - **Floor Management**: Registers and manages the count of people on each floor in a database.
-## Payload Example
+## Camel Route Logic
 
-Here's an example of a typical payload that the Building App expects from the `stairs` and `elevator` topics:
+The `building-app` uses Apache Camel to process and route building events, particularly those related to elevator and stairs traffic:
 
-```json
-{
-  "personId": 12345,
-  "destination": "5",
-  "preferredRoute": "stairs"
-}
-```
+### BuildingElevatorRoute
+- **Source**: Kafka topic `{{kafka.topic.elevator.name}}`.
+- **Description**: Processes events received from the elevator and updates relevant counters.
+- **Actions**:
+  - Logs the received event.
+  - Redirects the event to `direct:updateFloorData`.
+- **Example Event**:
+  ```json
+  {
+      "personId": 12345,
+      "preferredRoute": "elevator",
+      "destination": "5"
+  }
+  ```
+### BuildingStairsRoute
+- **Source**: Kafka topic `{{kafka.topic.stairs.name}}`.
+- **Description**: Processes events received from the stairs and updates relevant counters.
+- **Actions**:
+  - Logs the received event.
+  - Redirects the event to `direct:updateFloorData`.
+- **Example Event**:
+  ```json
+  {
+      "personId": 12345,
+      "preferredRoute": "elevator",
+      "destination": "5"
+  }
+  ```
+### InFloorRoute
+- **Source**: Direct endpoint `updateFloorData`.
+- **Description**: Processes events and updates the database with the current count of people on each floor.
+- **Actions**:
+  - Starts the `updateFloorDataTimer`.
+  - Constructs an SQL update statement to increment the people count for the specified floor.
+  - Executes the SQL statement against the `building-ds` database.
+
+## Event Processing
+
+In the `building-app`, event processing is essential, particularly when dealing with real-time data streams that determine the flow of people within the building. Here's a detailed breakdown of the Kafka topics the app interacts with and how it processes incoming messages:
+
+### Input Topics:
+- **`elevator`**: 
+  - **Description**: This topic receives events indicating individuals who have chosen the elevator as their preferred route from the Mobility App. The `building-app` processes these events and updates the relevant floor data in the database.
+  
+- **`stairs`**: 
+  - **Description**: This topic receives events indicating individuals who have chosen the stairs as their preferred route from the Mobility App. The `building-app` processes these events and updates the relevant floor data in the database.
+
+### Database Update:
+After processing the input from the Kafka topics, the `building-app` updates the `FloorData` in the database to reflect the current number of people on each floor and their chosen routes (either elevator or stairs).
 
 ## Monitoring Section for Building App 📊
 

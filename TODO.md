@@ -24,9 +24,10 @@ The Building App is a Quarkus-based application focused on registering and manag
   - [X] **`camel_routes_added_routes`**: Indicates the number of routes added.
 - [ ] **Logging**: Set up monitoring tools to keep track of the app's performance and health.
  ### 1.0.2
-- [ ] **Route Documentation**: Document all exposed APIs and endpoints for better clarity.
-- [ ] **Health Endpoint Integration**: Integrated `camel-quarkus-microprofile-health` to provide health check endpoints for application monitoring.
+- [X] **Route Documentation**: Document all exposed APIs and endpoints for better clarity.
+- [X] **Health Endpoint Integration**: Integrated `camel-quarkus-microprofile-health` to provide health check endpoints for application monitoring.
 ### 1.0.3
+- [ ] **Env vars**: 
 - [ ] **Helm Chart Creation**: Design and implement a Helm chart for streamlined deployments of the `building-app` on Kubernetes clusters.
 - [ ] **Implement Basic SLOs, SLAs, and Alerting**
   - [ ] **Availability SLO**: Ensure 99.9% uptime over a 10-minute window and create Prometheus rules for alerting.
@@ -41,8 +42,9 @@ The Building App is a Quarkus-based application focused on registering and manag
   - [ ] **Self-Healing Systems**:
     - [ ] **Liveness and Readiness Probes**: Implement probes to check the health of the application and restart pods that are not responsive.
     - [ ] **PodDisruptionBudget (PDB)**: Ensure high availability during voluntary disruptions by defining the minimum available replicas.
- ### 1.0.5
- - [ ] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
+### 1.0.5
+- [ ] **Document the database**: 
+- [ ] **Automatic Database Initialization**: Implement a mechanism to automatically set up the `buildingdb` with 5 floors in the `FloorData` table. For each floor:
   - Initialize `people_count` to 0.
   - Set a default value for `max_people`.
   - Set a default `structure_quality` rating (between 1 and 5).
