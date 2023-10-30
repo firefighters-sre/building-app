@@ -13,5 +13,5 @@ maintainers:
   - name: gsampaio
 dependencies:
 - name: quarkus-app-chart
-  version: "1.0.4"
+  version: "1.0.5"
   repository: "https://firefighters-sre.github.io/helm-charts/"
