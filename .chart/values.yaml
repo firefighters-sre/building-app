@@ -36,6 +36,12 @@ quarkus-app-chart:
       enabled: true
     podmonitor:
       enabled: false
+    slos:
+      enabled: true
+      severity: warning
+    slas:
+      enabled: false
+      severity: critical
   
   # use the image specified above as tag (else tag overridden in pipeline say)
   istag:
@@ -60,22 +66,6 @@ image_repository: quay.io
 image_name: building-app
 image_namespace: quarkus-dev
 image_version: latest
-
-prometheus:
-  namespace: kafka-logging
-  servicemonitor:
-    enabled: true
-  podmonitor:
-    enabled: false
-  slos:
-    enabled: true
-    severity: warning
-  slas:
-    enabled: false
-    severity: critical
-  fireincident:
-    slos: false
-    slas: false
     
 postgres:
   enabled: true
